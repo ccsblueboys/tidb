@@ -2015,6 +2015,9 @@ func (s *testSessionSuite) TestIssue1265(c *C) {
 	mustExecSQL(c, se, "create table t (a decimal unique);")
 	mustExecSQL(c, se, "insert t values ('100');")
 	mustExecFailed(c, se, "insert t values ('1e2');")
+
+	err := store.Close()
+	c.Assert(err, IsNil)
 }
 
 // Testcase for session
@@ -2434,4 +2437,7 @@ func (s *testSessionSuite) TestSelectHaving(c *C) {
 	mustExecMatch(c, se, sql, [][]interface{}{{"1", fmt.Sprintf("%v", []byte("hello"))}})
 	mustExecMultiSQL(c, se, "select * from select_having_test group by id having null is not null;")
 	mustExecMultiSQL(c, se, "drop table select_having_test")
+
+	err := store.Close()
+	c.Assert(err, IsNil)
 }

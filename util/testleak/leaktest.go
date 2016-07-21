@@ -38,7 +38,7 @@ func interestingGoroutines() (gs []string) {
 		if stack == "" ||
 			strings.Contains(stack, "created by github.com/pingcap/tidb.init") ||
 			strings.Contains(stack, "testing.RunTests") ||
-			strings.Contains(stack, "check.(*resultTracker).start") ||
+			strings.Contains(stack, "github.com/pingcap/check.") ||
 			strings.Contains(stack, "localstore.(*dbStore).scheduler") ||
 			strings.Contains(stack, "ddl.(*ddl).start") ||
 			strings.Contains(stack, "domain.NewDomain") ||
@@ -84,21 +84,22 @@ func AfterTest(c *check.C) func() {
 		}()
 
 		var leaked []string
-		for i := 0; i < 50; i++ {
+		count := 50
+		for i := 0; i < count; i++ {
 			for _, g := range interestingGoroutines() {
 				if !beforeTestGorountines[g] {
 					leaked = append(leaked, g)
 				}
 			}
+
 			// Bad stuff found, but goroutines might just still be
 			// shutting down, so give it some time.
-			if len(leaked) != 0 {
+			if len(leaked) != 0 && i != count-1 {
 				leaked = leaked[:0]
 				time.Sleep(50 * time.Millisecond)
 				continue
 			}
-
-			return
+			break
 		}
 		for _, g := range leaked {
 			c.Errorf("Test appears to have leaked: %v", g)

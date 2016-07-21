@@ -344,7 +344,7 @@ func (s *dbStore) CurrentVersion() (kv.Version, error) {
 	return globalVersionProvider.CurrentVersion()
 }
 
-// Begin transaction
+// Begin transaction.
 func (s *dbStore) Begin() (kv.Transaction, error) {
 	s.mu.RLock()
 	if s.closed {
