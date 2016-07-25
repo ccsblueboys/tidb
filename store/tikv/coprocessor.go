@@ -65,7 +65,7 @@ func supportExpr(exprType tipb.ExprType) bool {
 		return true
 	case tipb.ExprType_Plus:
 		return true
-	case tipb.ExprType_Count, tipb.ExprType_First, tipb.ExprType_Sum:
+	case tipb.ExprType_Count, tipb.ExprType_First, tipb.ExprType_Sum, tipb.ExprType_Avg, tipb.ExprType_Max, tipb.ExprType_Min:
 		return true
 	case kv.ReqSubTypeDesc:
 		return true
@@ -210,7 +210,7 @@ func (it *copIterator) work() {
 	for {
 		it.mu.Lock()
 		if it.finished {
-			it.mu.Lock()
+			it.mu.Unlock()
 			break
 		}
 		// Find the next task to send.
